@@ -1,0 +1,98 @@
+global:
+  containerRegistry: ""
+  # K8s namespace you want resources to be deployed to
+  namespace: "default"
+  tag: "2.4.4"
+
+# Common Labels
+labels:
+  app: "ndc-postgres" 
+
+# Container Configs
+image:
+  repository: ""
+  tag: ""
+  pullPolicy: Always
+  otelCollectorRepository: otel/opentelemetry-collector
+  otelCollectorTag: 0.104.0
+replicas: "1"
+wsInactiveExpiryMins: "1"
+securityContext:
+  runAsNonRoot: true
+  runAsGroup: 1000
+  runAsUser: 100
+  fsGroup: 1000
+
+healthChecks:
+  enabled: false
+  livenessProbePath: "/healthz"
+  readinessProbePath: "/healthz"
+
+hpa:
+  enabled: false
+  minReplicas: 2
+  maxReplicas: 4
+  metrics: 
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 50  # Target 50% CPU utilization per pod
+    - type: Resource
+      resource:
+        name: memory
+        target:
+          type: Utilization
+          averageUtilization: 80  # Target 80% memory utilization per pod  
+
+deployOtelCollector: true
+otelEndpoint: https://gateway.otlp.hasura.io:443
+configDirectory: "/etc/connector"
+dbUri: ""
+serviceTokenSecret: ""
+
+extraVolumes: |
+  {{- if .Values.deployOtelCollector }}
+  - name: otel-config
+    configMap:
+      name: {{ printf "%s-otel-config" (include "common.name" .) }} 
+      items:
+        - key: otel-collector-config.yaml
+          path: otel-collector-config.yaml
+  {{- end }}
+
+extraContainers: |
+  {{- if .Values.deployOtelCollector }}
+  - name: "otel-collector"
+    command:
+      - --config=/etc/otel-collector-config.yaml 
+    command: 
+    image: {{ template "common.image" (dict "Values" $.Values "repository" .Values.image.otelCollectorRepository "tag" .Values.image.otelCollectorTag) }} 
+    env:
+    - name: "HASURA_DDN_PAT"
+      value: ""
+    - name: "OTEL_ENDPOINT"
+      value: "{{ .Values.otelEndpoint }}"      
+    volumeMounts:
+      - name: otel-config
+        mountPath: "/etc/otel-collector-config.yaml" 
+        subPath: otel-collector-config.yaml
+  {{- end }}
+
+resources: |
+  requests:
+    cpu: "500m"
+    memory: "500Mi"
+  limits:
+    cpu: "1"
+    memory: "1Gi"
+
+# Replace CONNECTION_URI and HASURA_SERVICE_TOKEN_SECRET env vars with appropriate values
+env: |
+  - name: HASURA_CONFIGURATION_DIRECTORY
+    value: {{ .Values.configDirectory | quote }}
+  - name: CONNECTION_URI
+    value: {{ .Values.dbUri | quote }}
+  - name: HASURA_SERVICE_TOKEN_SECRET
+    value: {{ .Values.serviceTokenSecret | quote }}

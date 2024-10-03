@@ -1,0 +1,132 @@
+global:
+  # Container registry for custom created image
+  containerRegistry: ""
+  tag: "v1.0.0"
+  
+  # K8s namespace you want resources to be deployed to.  Ensure that this namespace is created ahead of time
+  namespace: "default"
+
+  # Creates ServiceAccount resource which references hasura-image-pull Secret
+  serviceAccount:
+    enabled: false
+
+  dataPlane:
+    # Creates Secret of type kubernetes.io/dockerconfigjson with contents of secrets.imagePullSecret
+    deployImagePullSecret: false
+  
+  # Sets the uriScheme to be used, acceptable values are http and https.
+  # This setting deploys appropriate ingress configs and propagates the change to other services.
+  # uriScheme: "https"
+  # Domain name to be used for DDN FQDN
+  # domain: "domain.nip.io"
+
+secrets:
+  imagePullSecret:
+    auths:
+      gcr.io:
+        username: "_json_key"
+        # Populate password with the contents of the .json key file associated with the image-pull service account
+        password: |
+        email: "support@hasura.io"
+
+image:
+  # Full path to custom created image
+  repository: ""
+  pullPolicy: Always
+  tag: ""
+  otelCollectorRepository: otel/opentelemetry-collector
+  otelCollectorTag: 0.104.0
+
+healthChecks:
+  enabled: true
+  livenessProbePath: "/health"
+  readinessProbePath: "/health"
+
+hpa:
+  enabled: false
+  minReplicas: 2
+  maxReplicas: 4
+  metrics: 
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 50  # Target 50% CPU utilization per pod
+    - type: Resource
+      resource:
+        name: memory
+        target:
+          type: Utilization
+          averageUtilization: 80  # Target 80% memory utilization per pod
+
+deployOtelCollector: true
+otelEndpoint: https://gateway.otlp.hasura.io:443
+
+# Path to opendd.json
+openDDPath: /md/open_dd.json
+# Path to auth_config.json
+authnConfigPath: /md/auth_config.json
+# Path to metadata.json
+metadataPath: /md/metadata.json
+# Enable CORS by sending appropriate headers
+enableCors: true
+
+extraVolumes: |
+  {{- if .Values.deployOtelCollector }}
+  - name: otel-config
+    configMap:
+      name: {{ printf "%s-otel-config" (include "common.name" .) }} 
+      items:
+        - key: otel-collector-config.yaml
+          path: otel-collector-config.yaml
+  {{- end }}
+
+extraContainers: |
+  {{- if .Values.deployOtelCollector }}
+  - name: "otel-collector"
+    command:
+      - --config=/etc/otel-collector-config.yaml 
+    command: 
+    image: {{ template "common.image" (dict "Values" $.Values "repository" .Values.image.otelCollectorRepository "tag" .Values.image.otelCollectorTag) }} 
+    env:
+    - name: "HASURA_DDN_PAT"
+      value: ""
+    - name: "OTEL_ENDPOINT"
+      value: "{{ .Values.otelEndpoint }}"      
+    volumeMounts:
+      - name: otel-config
+        mountPath: "/etc/otel-collector-config.yaml" 
+        subPath: otel-collector-config.yaml
+  {{- end }}
+
+securityContext:
+  runAsNonRoot: true
+  runAsGroup: 1000
+  runAsUser: 100
+  fsGroup: 1000
+httpPort: 3000
+replicas: 1
+resources: |
+  requests:
+    cpu: "1"
+    memory: "1Gi"
+  limits:
+    cpu: "2"
+    memory: "2Gi"
+
+env: |
+  - name: METADATA_PATH
+    value: {{ .Values.openDDPath | quote }}
+  - name: AUTHN_CONFIG_PATH
+    value: {{ .Values.authnConfigPath | quote }}
+  - name: INTROSPECTION_METADATA_FILE
+    value: {{ .Values.metadataPath | quote }}
+  - name: ENABLE_CORS
+    value: {{ .Values.enableCors | quote }}
+
+# ingress:
+#   enabled: true
+#   hostName: '{{ template "v3-st.domain" . }}'
+#   additionalAnnotations: '{{ template "v3-st.ingress.annotations" . }}'
+#   path: '{{ template "v3-st.path" . }}'

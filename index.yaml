@@ -3,13 +3,13 @@ entries:
   ddn-engine:
   - apiVersion: v2
     appVersion: 1.16.0
-    created: "2024-10-03T17:31:45.120484246-04:00"
+    created: "2024-10-03T22:18:20.19634538-04:00"
     dependencies:
     - name: common
       repository: oci://us-west1-docker.pkg.dev/hasura-ee/helm-charts
       version: 0.0.5
     description: (DDN) A Helm chart for deploying ddn-engine
-    digest: 664b06d2bc44cd30284a68fb7979acd9ddaf8944d52445d8c31a1231c0032d4d
+    digest: d62ebc1f81270bf8fe048a93916f2f5b22f18a9267a9c3e950e35c8c3df0acbb
     name: ddn-engine
     type: application
     urls:
@@ -18,13 +18,13 @@ entries:
   ddn-mongo-connector:
   - apiVersion: v2
     appVersion: 1.16.0
-    created: "2024-10-03T17:31:45.127183218-04:00"
+    created: "2024-10-03T22:18:20.213329889-04:00"
     dependencies:
     - name: common
       repository: oci://us-west1-docker.pkg.dev/hasura-ee/helm-charts
       version: 0.0.5
     description: (DDN) A Helm chart for deploying mongo-connector
-    digest: 6260c12385ce83f78dd87b2de83ba4e8bdfb96b9c6365d2aaa9d760e5f5ff242
+    digest: 8b3ece4fb075101236d331b88fd353e5964627c4e8ef18dde9b72e938c824e27
     name: ddn-mongo-connector
     type: application
     urls:
@@ -33,16 +33,16 @@ entries:
   ddn-ndc-postgres:
   - apiVersion: v2
     appVersion: 1.16.0
-    created: "2024-10-03T17:31:45.136608537-04:00"
+    created: "2024-10-03T22:18:20.227760749-04:00"
     dependencies:
     - name: common
       repository: oci://us-west1-docker.pkg.dev/hasura-ee/helm-charts
       version: 0.0.5
     description: (DDN) A Helm chart for deploying ndc-postgres
-    digest: a6531026d0ff6fc6ff452d211d1e6e4b4e4a38a0186ceaa42d098cecc4e74196
+    digest: 84a9a9557c32bb953309493ebca8e57ab326c8027292133eaec1c0a60912ef5f
     name: ddn-ndc-postgres
     type: application
     urls:
     - https://github.com/tomhasura/helm-charts/ddn-ndc-postgres-0.2.0.tgz
     version: 0.2.0
-generated: "2024-10-03T17:31:45.111877292-04:00"
+generated: "2024-10-03T22:18:20.174368151-04:00"

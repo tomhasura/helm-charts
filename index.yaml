@@ -3,13 +3,13 @@ entries:
   ddn-engine:
   - apiVersion: v2
     appVersion: 1.16.0
-    created: "2024-10-03T22:18:20.19634538-04:00"
+    created: "2024-10-03T22:31:10.395405529-04:00"
     dependencies:
     - name: common
       repository: oci://us-west1-docker.pkg.dev/hasura-ee/helm-charts
       version: 0.0.5
     description: (DDN) A Helm chart for deploying ddn-engine
-    digest: d62ebc1f81270bf8fe048a93916f2f5b22f18a9267a9c3e950e35c8c3df0acbb
+    digest: 787b7cd138e7ca733bb6b9c888119df2e30a764d75d936155816227debeb7837
     name: ddn-engine
     type: application
     urls:
@@ -18,13 +18,13 @@ entries:
   ddn-mongo-connector:
   - apiVersion: v2
     appVersion: 1.16.0
-    created: "2024-10-03T22:18:20.213329889-04:00"
+    created: "2024-10-03T22:31:10.400174332-04:00"
     dependencies:
     - name: common
       repository: oci://us-west1-docker.pkg.dev/hasura-ee/helm-charts
       version: 0.0.5
     description: (DDN) A Helm chart for deploying mongo-connector
-    digest: 8b3ece4fb075101236d331b88fd353e5964627c4e8ef18dde9b72e938c824e27
+    digest: b55ba9bf953433ab9684c515f3423124b1240d8ce898ae43f3130ca2085c0564
     name: ddn-mongo-connector
     type: application
     urls:
@@ -33,16 +33,27 @@ entries:
   ddn-ndc-postgres:
   - apiVersion: v2
     appVersion: 1.16.0
-    created: "2024-10-03T22:18:20.227760749-04:00"
+    created: "2024-10-03T22:31:10.405248137-04:00"
     dependencies:
     - name: common
       repository: oci://us-west1-docker.pkg.dev/hasura-ee/helm-charts
       version: 0.0.5
     description: (DDN) A Helm chart for deploying ndc-postgres
-    digest: 84a9a9557c32bb953309493ebca8e57ab326c8027292133eaec1c0a60912ef5f
+    digest: 7056d6d3a4a61a465efe22202ce71cf90dd2d5621fc7b7ac3efa908b33ffe0e6
     name: ddn-ndc-postgres
     type: application
     urls:
     - https://github.com/tomhasura/helm-charts/ddn-ndc-postgres-0.2.0.tgz
     version: 0.2.0
-generated: "2024-10-03T22:18:20.174368151-04:00"
+  graphql-data-connector:
+  - apiVersion: v2
+    appVersion: 2.41.0
+    created: "2024-10-03T22:31:10.409979595-04:00"
+    description: An Helm chart for GraphQL Data Connector in Kubernetes
+    digest: 3d27bf88ec8f86b94ce6172eb050e115e1b54c4c2138c63e9d7409b292febd13
+    name: graphql-data-connector
+    type: application
+    urls:
+    - https://github.com/tomhasura/helm-charts/graphql-data-connector-0.6.0.tgz
+    version: 0.6.0
+generated: "2024-10-03T22:31:10.388928716-04:00"
